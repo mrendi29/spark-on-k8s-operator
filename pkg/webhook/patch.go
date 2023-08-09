@@ -315,6 +315,7 @@ func addEnvironmentVariable(pod *corev1.Pod, envName, envValue string) *patchOpe
 func addSparkConfigMap(pod *corev1.Pod, app *v1beta2.SparkApplication, client kubernetes.Interface) []patchOperation {
 	var patchOps []patchOperation
 	sparkConfigMapName := app.Spec.SparkConfigMap
+	glog.V(2).Infof("Getting ConfigMap on namespace %v  with configname: %v", app.Namespace, sparkConfigMapName)
 	if sparkConfigMapName != nil {
 		// Add Volume populated by the ConfigMap
 		patchOps = append(patchOps, addConfigMapVolume(pod, *sparkConfigMapName, config.SparkConfigMapVolumeName))
@@ -349,6 +350,7 @@ func addSparkConfigMap(pod *corev1.Pod, app *v1beta2.SparkApplication, client ku
 		if err != nil {
 			glog.V(2).Infof("Found ConfigMap with data: %v", configMap.Data)
 			for key := range configMap.Data {
+				glog.V(2).Infof("Adding %v to spark-conf", key)
 				if key == config.DefaultSparkPropertiesFile {
 					glog.V(2).Infof("Ignoring spark.properties")
 					continue
